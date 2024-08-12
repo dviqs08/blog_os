@@ -1,33 +1,16 @@
-// no access to the standard library
-#![no_std]
-// normally Rust calls the C runtime (crt0)
-// that sets up an environment for a C app,
-// which creates the stack and places arguments,
-// then the C runtime invokes the entry point
-// of the Rust runtime.
-// We don't have access to the C runtime and
-// the Rust runtime, so we have to
-// completely overwrite crt0.
-#![no_main]
+#![no_std] // don't link to standard library
+#![no_main] // disable all Rust-level entrypoints
 
-// we have to define our own panic handler
 use core::panic::PanicInfo;
 
-// we have to disable the standard library
-// main is disabled.
-// we are overwriting the operating system entry point.
-// no_mangle so _start is literally _start
-#[no_mangle]
+#[no_mangle] // don't mangle the name of this function
 pub extern "C" fn _start() -> ! {
+    // this function is the entry point, since the linker looks for
+    // a function named "_start" by default
     loop {}
 }
 
-// PanicInfo contains the file and line where the panic happened
-// and the optional panic message. THe function should never return,
-// that's what the exclamation point means.
-// we also had to set the panic strategry to
-// abort rather than to unwind the stack because that is
-// complicated.
+// This function is called on panic
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     loop {}
